@@ -113,7 +113,7 @@ from openedx.core.lib.courses import course_image_url
 .main_course_details h1{text-align:left; margin-bottom:10px;font-weight: 600;text-transform: capitalize;}
 .main_course_details p.short_description{}
 .main_course_details p.student_enrolled{}
-.main_other_details{margin-top:30px;}
+.main_other_details{margin-top:30px;margin-top: 30px;float: left;width: 100%;margin-bottom: 50px;}
 .main_other_details .img_video_container{float:left;width:70%;}
 .main_other_details .img_video_container iframe, .main_other_details .img_video_container img{width:95%; height:450px;}
 .main_other_details .course-sidebar{width:30%;}
@@ -147,13 +147,13 @@ p, li{font-family:"open sans";}
 .social-sharing a{width: 100%; float: left; font-size: 40px; color: gray; margin-bottom:20px;}
 .recommanded_course .row{padding-bottom:15px;background:#fff;width:100%;float:left;}
 .row .img {float:left;width:50%;}
-.row .img img{max-width:100%;}
+.row .img img{width:165px;height:100px;}
 .row .text{float:left;width:50%; }
 .row .text h2{font-size: 14px; font-family: 'open sans';margin-top:0;margin-bottom:5px;}
 .row .text .course_price{font-size: 16px; font-family: 'open sans';margin-top:0;margin-bottom:5px; font-weight:bold;}
 .row .text p {margin-top:5px;margin-bottom:5px;}
 .row .text p span{font-size: 16px; font-family: 'open sans';}
-.recommanded_course{display:none;float:left; margin-top:50px;}
+.recommanded_course{display:none;float:left; margin-top:50px;width:100%;}
 .syllabus .header_title{border-bottom: 1px solid #cdcdcd; padding-bottom: 10px; }
 .syllabus .section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px; margin-top: 25px;}
 .syllabus .sub_section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px;}
@@ -361,16 +361,18 @@ $(document).ready(function(){
           </ol>
         </section>
       </section>
-      <section class="syllabus">
-      <p class="header_title">Syllabus</p>
-      % for section in course.get_children():
-          <p class="section_name"><b>${section.display_name_with_default}</b></p>
-          <% material_type = {} %>
-          % for sub_section in section.get_children():
-            <p class="sub_section_name">${sub_section.display_name_with_default}</p>
-          % endfor
-      % endfor
-      </section>
+      % if course.get_children():
+        <section class="syllabus">
+        <p class="header_title">Syllabus</p>
+        % for section in course.get_children():
+            <p class="section_name"><b>${section.display_name_with_default}</b></p>
+            <% material_type = {} %>
+            % for sub_section in section.get_children():
+              <p class="sub_section_name">${sub_section.display_name_with_default}</p>
+            % endfor
+        % endfor
+        </section>
+      % endif
     </div>
   </section>
 </section>
