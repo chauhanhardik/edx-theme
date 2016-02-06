@@ -109,7 +109,8 @@ from openedx.core.lib.courses import course_image_url
 # and other advantage is we can pull latest code without any confliction
 -->
 <style rel="style" type="text/css">
-.main_course_details h1{text-align:left; margin-bottom:10px;}
+.wrapper-footer{margin-top:0 !important;}
+.main_course_details h1{text-align:left; margin-bottom:10px;font-weight: 600;text-transform: capitalize;}
 .main_course_details p.short_description{}
 .main_course_details p.student_enrolled{}
 .main_other_details{margin-top:30px;}
@@ -119,13 +120,14 @@ from openedx.core.lib.courses import course_image_url
 .main_other_details .img_video_container img{width:95%; height:450px;}
 .main-cta a{ width:87%; }
 .main-cta span{ width:87%; padding: 10px; background: #cdcdcd; float: left; width: 93%; text-align: center; border: 1px solid gray; }
-ol.important-dates{}
 .course-info .course-sidebar .important-dates li .icon{margin: 0 10px 0 0;}
 .main-cta h1{margin-bottom:10px; text-align:left; font-weight:bolder;}
 .trainer_container{padding-bottom: 30px;background: #fff;float:left;padding: 10px; background: #fff;}
 .trainer_container div:first-child{min-height: 100px;margin-bottom: 10px;}
-.trainer_container .trainer_image{width: 30%; float: left; margin-right: 15px;}
-.trainer_container .trainer_image img{width: 100%; border-radius: 100%;}
+.trainer_container .trainer_image{width: 30%; float: left; margin-right: 3%;}
+.trainer_container .name_and_desg{float:left; width:67%;}
+.trainer_container .name_and_desg p{margin-bottom:5px;margin-top:0;font-weight:bold;}
+.trainer_container .trainer_image img{width: 100px; height:100px;}
 .instructor_container .trainer_container .row{float:left; width:100%;}
 .sidebar_container{width:30%;float:right;}
 .header_title{font-size: 20px; font-weight: bolder; margin-bottom: 15px;}
@@ -148,7 +150,7 @@ p, li{font-family:"open sans";}
 .row .img img{max-width:100%;}
 .row .text{float:left;width:50%; }
 .row .text h2{font-size: 14px; font-family: 'open sans';margin-top:0;margin-bottom:5px;}
-.row .text .course_price{font-size: 16px; font-family: 'open sans';margin-top:0;margin-bottom:5px;}
+.row .text .course_price{font-size: 16px; font-family: 'open sans';margin-top:0;margin-bottom:5px; font-weight:bold;}
 .row .text p {margin-top:5px;margin-bottom:5px;}
 .row .text p span{font-size: 16px; font-family: 'open sans';}
 .recommanded_course{display:none;float:left; margin-top:50px;}
@@ -178,7 +180,7 @@ $(document).ready(function(){
       </h1>
       <p class="short_description">${get_course_about_section(request, course, 'short_description')}</p>
       <p class="student_enrolled"><span class="fa fa-users" />&nbsp; 2 student enrolled</p>
-      <p class="instructor_details">Instructed by <a href="">Hardik Chauhan</a></p>
+      <p class="instructor_details">Instructed by <a href="">John Doe</a></p>
     </div>
     <div class="main_other_details">
       <div class="img_video_container">
@@ -390,9 +392,44 @@ $(document).ready(function(){
       ##  <a href="#">${_("Reviews")}</a>
       </nav>-->
 
-      <div class="inner-wrapper">
+      <div class="inner-wrapper course_overview">
         ${get_course_about_section(request, course, "overview")}
       </div>
+	<div class="sidebar_container">
+		<div class="instructor_container">
+			<p class="header_title">Instructor</p>
+			<div class="trainer_container">
+				<div class="trainer_image">
+					<img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
+				</div>
+				<div class="name_and_desg">				
+					<p>John Doe</p>
+					<p>Software Engineer</p>
+				</div>
+				<div class="details_container row">
+					<p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
+
+Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
+				</div>	
+			</div>
+
+			<div class="trainer_container">
+				<div class="trainer_image">
+					<img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
+				</div>
+				<div class="name_and_desg">				
+					<p>John Doe</p>
+					<p>Software Engineer</p>
+				</div>
+				<div class="details_container row">
+					<p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
+
+Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
+				</div>	
+			</div>
+		</div>
+		
+	</div>
     </section>
 
     
