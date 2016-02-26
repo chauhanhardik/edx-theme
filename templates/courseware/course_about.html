@@ -187,7 +187,7 @@ $(document).ready(function(){
         % if get_course_about_section(request, course, "video"):
             ${get_course_about_section(request, course, "video")}
         %else:
-            <img src="${course_image_urls['large']}" alt="" />
+            <img src="${course_image_url(course)}" alt="" />
         % endif
       </div>
       <section class="course-sidebar">
@@ -458,7 +458,7 @@ Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cr
     <p class="header_title">Recommanded course</p>
     <div class="row">
       <div class="img">
-        <img src="${course_image_urls['large']}" />
+        <img src="${course_image_url(course)}" />
       </div>
       <div class="text">
         <h2>${course.display_name_with_default}</h2>
@@ -467,7 +467,7 @@ Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cr
     </div>
     <div class="row">
       <div class="img">
-        <img src="${course_image_urls['large']}" />
+        <img src="${course_image_url(course)}" />
       </div>
       <div class="text">
         <h2>${course.display_name_with_default}</h2>
@@ -476,7 +476,7 @@ Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cr
     </div>
     <div class="row">
       <div class="img">
-        <img src="${course_image_urls['large']}" />
+        <img src="${course_image_url(course)}" />
       </div>
       <div class="text">
         <h2>${course.display_name_with_default}</h2>
