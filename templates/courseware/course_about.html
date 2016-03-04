@@ -158,6 +158,18 @@ p, li{font-family:"open sans";}
 .syllabus .section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px; margin-top: 25px;}
 .syllabus .sub_section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px;}
 ul{padding-left: 20px;}
+.course-info .details .inner-wrapper .syllabus ul{padding: 0; float: left; width: 100%; list-style: none;border-bottom: 2px solid #cdcdcd;
+    padding-bottom: 10px; margin-bottom: 25px; padding-left: 20px;}
+.course-info .details .inner-wrapper .syllabus ul li {
+    font: normal 1em/1.6em Georgia,Cambria,"Times New Roman",Times,serif;
+    width: auto;
+    float: left;
+    margin-right: 25px;
+    text-transform: capitalize;
+}
+.material li span{font-family: 'open sans';}
+.material li span.category{font-weight: bolder;}
+.material li span.category_count{font-weight: bolder;}
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -169,14 +181,12 @@ $(document).ready(function(){
   $("#social_sharing").css({"display":"block"});
 });
 </script>
+
 <section class="course-info">
   <section class="container">
     <div class="main_course_details">
       <h1>
         ${course.display_name_with_default}
-        % if not self.theme_enabled():
-          <a href="#">${course.display_org_with_default | h}</a>
-        % endif
       </h1>
       <p class="short_description">${get_course_about_section(request, course, 'short_description')}</p>
       <p class="student_enrolled"><span class="fa fa-users" />&nbsp; 2 student enrolled</p>
@@ -249,7 +259,7 @@ $(document).ready(function(){
               ## TODO: this should probably be an overrideable block,
               ##       or something allowing themes to do whatever they
               ##       want here (and on this whole page, really).
-              % if self.stanford_theme_enabled():
+              % if microsite.get_value('course_about_show_social_links', False):
                 <a href="http://twitter.com/intent/tweet?text=I+just+enrolled+in+${course.number}+${course.display_name_with_default}!+(http://class.stanford.edu)" class="share">
                   <i class="icon fa fa-twitter"></i><span class="sr">${_("Tweet that you've enrolled in this course")}</span>
                 </a>
@@ -368,8 +378,45 @@ $(document).ready(function(){
             <p class="section_name"><b>${section.display_name_with_default}</b></p>
             <% material_type = {} %>
             % for sub_section in section.get_children():
-              <p class="sub_section_name">${sub_section.display_name_with_default}</p>
+              <p class="sub_section_name">${sub_section.display_name_with_default}
+              % for unit in sub_section.get_children():
+                <!-- <p class="sub_section_name">${unit.display_name_with_default}</p> -->
+                <% 
+                    is_first_unit = True
+                    %>
+                % for component in unit.get_children():
+                    <%
+                        if not component.category in material_type.keys():
+                            material_type[component.category] = 1
+                        else:
+                            material_type[component.category] = material_type[component.category]+1
+                    %>
+                    % if is_first_unit:
+                        <% is_first_unit = False %>
+                        % if component.category == 'video':
+                            % if component.html5_sources:
+                                <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="html5" data-url="${component.html5_sources[0]}"><span class="fa fa-video-camera"></span></a>
+                            % else:
+                                <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="youtube" data-url="https://www.youtube.com//embed/${component.youtube_id_1_0}?autoplay=1"><span class="fa fa-video-camera"></span></a>
+                            % endif
+                        % endif
+                    % endif
+                % endfor
+              % endfor
+              </p>
             % endfor
+            % if material_type:
+            <ul class="material">
+                % for k,v in material_type.items():
+                    <li>
+                        <span class="category">${k}</span>
+                        <span> : </span>
+                        <span class="category_count">${v}</span>
+                    </li>
+                % endfor
+            </ul>
+            % endif
+            
         % endfor
         </section>
       % endif
@@ -397,41 +444,41 @@ $(document).ready(function(){
       <div class="inner-wrapper course_overview">
         ${get_course_about_section(request, course, "overview")}
       </div>
-	<div class="sidebar_container">
-		<div class="instructor_container">
-			<p class="header_title">Instructor</p>
-			<div class="trainer_container">
-				<div class="trainer_image">
-					<img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
-				</div>
-				<div class="name_and_desg">				
-					<p>John Doe</p>
-					<p>Software Engineer</p>
-				</div>
-				<div class="details_container row">
-					<p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
+    <div class="sidebar_container">
+        <div class="instructor_container">
+            <p class="header_title">Instructor</p>
+            <div class="trainer_container">
+                <div class="trainer_image">
+                    <img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
+                </div>
+                <div class="name_and_desg">             
+                    <p>John Doe</p>
+                    <p>Software Engineer</p>
+                </div>
+                <div class="details_container row">
+                    <p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
 
 Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
-				</div>	
-			</div>
+                </div>  
+            </div>
 
-			<div class="trainer_container">
-				<div class="trainer_image">
-					<img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
-				</div>
-				<div class="name_and_desg">				
-					<p>John Doe</p>
-					<p>Software Engineer</p>
-				</div>
-				<div class="details_container row">
-					<p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
+            <div class="trainer_container">
+                <div class="trainer_image">
+                    <img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
+                </div>
+                <div class="name_and_desg">             
+                    <p>John Doe</p>
+                    <p>Software Engineer</p>
+                </div>
+                <div class="details_container row">
+                    <p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
 
 Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
-				</div>	
-			</div>
-		</div>
-		
-	</div>
+                </div>  
+            </div>
+        </div>
+        
+    </div>
     </section>
 
     
@@ -503,3 +550,6 @@ Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cr
 %endif
 
 <%include file="../video_modal.html" />
+
+
+<%include file="../intro_video_modal.html" />
