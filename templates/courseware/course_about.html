@@ -407,32 +407,34 @@ $(document).ready(function(){
             <p class="section_name"><b>${section.display_name_with_default}</b></p>
             <% material_type = {} %>
             % for sub_section in section.get_children():
-              <p class="sub_section_name">${sub_section.display_name_with_default}
-              % for unit in sub_section.get_children():
-                <!-- <p class="sub_section_name">${unit.display_name_with_default}</p> -->
-                <% 
-                    is_first_unit = True
+              % if not sub_section.visible_to_staff_only:
+                  <p class="sub_section_name">${sub_section.display_name_with_default}
+                  % for unit in sub_section.get_children():
+                    <!-- <p class="sub_section_name">${unit.display_name_with_default}</p> -->
+                    <% 
+                        is_first_unit = True
                     %>
-                % for component in unit.get_children():
-                    <%
-                        if not component.category in material_type.keys():
-                            material_type[component.category] = 1
-                        else:
-                            material_type[component.category] = material_type[component.category]+1
-                    %>
-                    % if is_first_unit:
-                        <% is_first_unit = False %>
-                        % if component.category == 'video':
-                            % if component.html5_sources:
-                                <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="html5" data-url="${component.html5_sources[0]}"><span class="fa fa-video-camera"></span></a>
-                            % else:
-                                <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="youtube" data-url="https://www.youtube.com//embed/${component.youtube_id_1_0}"><span class="fa fa-video-camera"></span></a>
+                    % for component in unit.get_children():
+                        <%
+                            if not component.category in material_type.keys():
+                                material_type[component.category] = 1
+                            else:
+                                material_type[component.category] = material_type[component.category]+1
+                        %>
+                        % if is_first_unit:
+                            <% is_first_unit = False %>
+                            % if component.category == 'video':
+                                % if component.html5_sources:
+                                    <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="html5" data-url="${component.html5_sources[0]}"><span class="fa fa-video-camera"></span></a>
+                                % else:
+                                    <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="youtube" data-url="https://www.youtube.com//embed/${component.youtube_id_1_0}"><span class="fa fa-video-camera"></span></a>
+                                % endif
                             % endif
                         % endif
-                    % endif
-                % endfor
-              % endfor
-              </p>
+                    % endfor
+                  % endfor
+                  </p>
+                % endif
             % endfor
             % if material_type:
             <ul class="material">
