@@ -121,7 +121,7 @@ from openedx.core.lib.courses import course_image_url
 .main_course_details h1{text-align:left; margin-bottom:10px;font-weight: 600;text-transform: capitalize;}
 .main_course_details p.short_description{}
 .main_course_details p.student_enrolled{}
-.main_other_details{margin-top:30px;margin-top: 30px;float: left;width: 100%;margin-bottom: 50px;}
+.main_other_details{margin-top:30px;float: left;width: 100%;}
 .main_other_details .img_video_container{float:left;width:70%;}
 .main_other_details .img_video_container iframe, .main_other_details .img_video_container img{width:95%; height:450px;}
 .main_other_details .course-sidebar{width:30%;}
@@ -138,7 +138,7 @@ from openedx.core.lib.courses import course_image_url
 .trainer_container .trainer_image img{width: 100px; height:100px;}
 .instructor_container .trainer_container .row{float:left; width:100%;}
 .sidebar_container{width:30%;float:right;}
-.header_title{font-size: 20px; font-weight: bolder; margin-bottom: 15px;font-family:"open sans";}
+.header_title{ text-align: left; font-size: 20px; font-weight: bolder; margin-bottom: 15px;font-family:"open sans";}
 .instructor_container h3{margin-bottom:20px;font-size: 20px; font-weight: bolder; margin-bottom: 15px;}
 .course-info .course-sidebar > section.course-summary {padding:0 15px;}
 .course-info .details {width:100%;}
@@ -151,9 +151,9 @@ p, li{font-family:"open sans";}
 .main-cta a, .main-cta a:hover, .main-cta a:focus{background-image:none; line-height:35px; border:none;}
 .course-info .container, .course-info section.outside-app, .course-info .wrapper-account-settings, .course-info .view-profile .profile-self .wrapper-profile-field-account-privacy .u-field-account_privacy, .view-profile .profile-self .wrapper-profile-field-account-privacy .course-info .u-field-account_privacy, .course-info .view-profile .wrapper-profile-sections, .view-profile .course-info .wrapper-profile-sections{padding-bottom: 0px;}
 .course-info .course-sidebar .important-dates{padding:0; margin-top:35px !important;}
-#social_sharing{display:none;margin-top:30px;float:left; margin-top:50px;}
-.social-sharing a{width: 100%; float: left; font-size: 40px; color: gray; margin-bottom:20px;}
-.recommanded_course .row{padding-bottom:15px;background:#fff;width:100%;float:left;}
+#social_sharing{margin-top:10px;float:left;width: 100%; padding: 0; }
+#social_sharing:after{background-image: none !important;}
+.course-info .course-sidebar header .social-sharing .share{width: 100% !important; float: left; font-size: 40px !important; color: gray; margin-bottom:10px; text-align: left; }
 .row .img {float:left;width:50%;}
 .row .img img{width:165px;height:100px;}
 .row .text{float:left;width:50%; }
@@ -161,7 +161,6 @@ p, li{font-family:"open sans";}
 .row .text .course_price{font-size: 16px; font-family: 'open sans';margin-top:0;margin-bottom:5px; font-weight:bold;}
 .row .text p {margin-top:5px;margin-bottom:5px;}
 .row .text p span{font-size: 16px; font-family: 'open sans';}
-.recommanded_course{display:none;float:left; margin-top:50px;width:100%;}
 .syllabus .header_title{border-bottom: 1px solid #cdcdcd; padding-bottom: 10px;  }
 .syllabus .section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px; margin-top: 25px;}
 .syllabus .sub_section_name{border-bottom: 1px solid #cdcdcd; padding-bottom: 5px;}
@@ -183,10 +182,6 @@ ul{padding-left: 20px;}
 $(document).ready(function(){
   $(".course_overview").append($(".syllabus"));
   $(".syllabus").css({"display":"block"});
-  $(".sidebar_container").append($(".recommanded_course"));
-  $(".recommanded_course").css({"display":"block"});
-  $(".sidebar_container").append($("#social_sharing"));
-  $("#social_sharing").css({"display":"block"});
 });
 </script>
 
@@ -286,6 +281,62 @@ $(document).ready(function(){
               <div id="register_error"></div>
             %endif
           </div>
+          
+          <ol class="important-dates">
+            <li class="important-dates-item"><i class="icon fa fa-info-circle"></i><p class="important-dates-item-title">${_("Course Number")}</p><span class="important-dates-item-text course-number">${course.display_number_with_default | h}</span></li>
+            % if not course.start_date_is_still_default:
+              <li class="important-dates-item"><i class="icon fa fa-calendar"></i><p class="important-dates-item-title">${_("Classes Start")}</p><span class="important-dates-item-text start-date">${course.start_datetime_text()}</span></li>
+            % endif
+              ## We plan to ditch end_date (which is not stored in course metadata),
+              ## but for backwards compatibility, show about/end_date blob if it exists.
+              % if get_course_about_section(request, course, "end_date") or course.end:
+              <li class="important-dates-item">
+                  <i class="icon fa fa-calendar"></i>
+                  <p class="important-dates-item-title">${_("Classes End")}</p>
+                  <span class="important-dates-item-text final-date">
+                      % if get_course_about_section(request, course, "end_date"):
+                          ${get_course_about_section(request, course, "end_date")}
+                      % else:
+                          ${course.end_datetime_text()}
+                      % endif
+                  </span>
+              </li>
+              % endif
+
+            % if get_course_about_section(request, course, "effort"):
+              <li class="important-dates-item"><i class="icon fa fa-pencil"></i><p class="important-dates-item-title">${_("Estimated Effort")}</p><span class="important-dates-item-text effort">${get_course_about_section(request, course, "effort")}</span></li>
+            % endif
+
+            ##<li class="important-dates-item"><i class="icon fa fa-clock-o"></i><p class="important-dates-item-title">${_('Course Length')}</p><span class="important-dates-item-text course-length">${_('{number} weeks').format(number=15)}</span></li>
+
+            %if course_price and (can_add_course_to_cart or is_cosmetic_price_enabled):
+              <li class="important-dates-item">
+                <i class="icon fa fa-money"></i>
+                <p class="important-dates-item-title">${_("Price")}</p>
+                <span class="important-dates-item-text">${course_price}</span>
+              </li>
+            %endif
+
+            % if pre_requisite_courses:
+            <% prc_target = reverse('about_course', args=[unicode(pre_requisite_courses[0]['key'])]) %>
+            <li class="prerequisite-course important-dates-item">
+              <i class="icon fa fa-list-ul"></i>
+              <p class="important-dates-item-title">${_("Prerequisites")}</p>
+              ## Multiple pre-requisite courses are not supported on frontend that's why we are pulling first element
+              <span class="important-dates-item-text pre-requisite"><a href="${prc_target}">${pre_requisite_courses[0]['display']}</a></span>
+              <p class="tip">
+              ${_("You must successfully complete {link_start}{prc_display}{link_end} before you begin this course.").format(
+                link_start='<a href="{}">'.format(prc_target),
+                link_end='</a>',
+                prc_display=pre_requisite_courses[0]['display'],
+              )}
+              </p>
+            </li>
+            % endif
+            % if get_course_about_section(request, course, "prerequisites"):
+              <li class="important-dates-item"><i class="icon fa fa-book"></i><p class="important-dates-item-title">${_("Requirements")}</p><span class="important-dates-item-text prerequisites">${get_course_about_section(request, course, "prerequisites")}</span></li>
+            % endif
+          </ol>
           <header id="social_sharing">
             % if microsite.get_value('course_about_show_social_links', True):
             <div class="social-sharing">
@@ -347,62 +398,6 @@ $(document).ready(function(){
             </div>
             % endif
           </header>
-
-          <ol class="important-dates">
-            <li class="important-dates-item"><i class="icon fa fa-info-circle"></i><p class="important-dates-item-title">${_("Course Number")}</p><span class="important-dates-item-text course-number">${course.display_number_with_default | h}</span></li>
-            % if not course.start_date_is_still_default:
-              <li class="important-dates-item"><i class="icon fa fa-calendar"></i><p class="important-dates-item-title">${_("Classes Start")}</p><span class="important-dates-item-text start-date">${course.start_datetime_text()}</span></li>
-            % endif
-              ## We plan to ditch end_date (which is not stored in course metadata),
-              ## but for backwards compatibility, show about/end_date blob if it exists.
-              % if get_course_about_section(request, course, "end_date") or course.end:
-              <li class="important-dates-item">
-                  <i class="icon fa fa-calendar"></i>
-                  <p class="important-dates-item-title">${_("Classes End")}</p>
-                  <span class="important-dates-item-text final-date">
-                      % if get_course_about_section(request, course, "end_date"):
-                          ${get_course_about_section(request, course, "end_date")}
-                      % else:
-                          ${course.end_datetime_text()}
-                      % endif
-                  </span>
-              </li>
-              % endif
-
-            % if get_course_about_section(request, course, "effort"):
-              <li class="important-dates-item"><i class="icon fa fa-pencil"></i><p class="important-dates-item-title">${_("Estimated Effort")}</p><span class="important-dates-item-text effort">${get_course_about_section(request, course, "effort")}</span></li>
-            % endif
-
-            ##<li class="important-dates-item"><i class="icon fa fa-clock-o"></i><p class="important-dates-item-title">${_('Course Length')}</p><span class="important-dates-item-text course-length">${_('{number} weeks').format(number=15)}</span></li>
-
-            %if course_price and (can_add_course_to_cart or is_cosmetic_price_enabled):
-              <li class="important-dates-item">
-                <i class="icon fa fa-money"></i>
-                <p class="important-dates-item-title">${_("Price")}</p>
-                <span class="important-dates-item-text">${course_price}</span>
-              </li>
-            %endif
-
-            % if pre_requisite_courses:
-            <% prc_target = reverse('about_course', args=[unicode(pre_requisite_courses[0]['key'])]) %>
-            <li class="prerequisite-course important-dates-item">
-              <i class="icon fa fa-list-ul"></i>
-              <p class="important-dates-item-title">${_("Prerequisites")}</p>
-              ## Multiple pre-requisite courses are not supported on frontend that's why we are pulling first element
-              <span class="important-dates-item-text pre-requisite"><a href="${prc_target}">${pre_requisite_courses[0]['display']}</a></span>
-              <p class="tip">
-              ${_("You must successfully complete {link_start}{prc_display}{link_end} before you begin this course.").format(
-                link_start='<a href="{}">'.format(prc_target),
-                link_end='</a>',
-                prc_display=pre_requisite_courses[0]['display'],
-              )}
-              </p>
-            </li>
-            % endif
-            % if get_course_about_section(request, course, "prerequisites"):
-              <li class="important-dates-item"><i class="icon fa fa-book"></i><p class="important-dates-item-title">${_("Requirements")}</p><span class="important-dates-item-text prerequisites">${get_course_about_section(request, course, "prerequisites")}</span></li>
-            % endif
-          </ol>
         </section>
       </section>
       % if course.get_children():
@@ -549,36 +544,6 @@ Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cr
 
   </section>
 </section>
-<div class="recommanded_course">
-    <p class="header_title">Recommanded course</p>
-    <div class="row">
-      <div class="img">
-        <img src="${course_image_url(course)}" />
-      </div>
-      <div class="text">
-        <h2>${course.display_name_with_default}</h2>
-        <p class="course_price">${course_price}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="img">
-        <img src="${course_image_url(course)}" />
-      </div>
-      <div class="text">
-        <h2>${course.display_name_with_default}</h2>
-        <p class="course_price">${course_price}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="img">
-        <img src="${course_image_url(course)}" />
-      </div>
-      <div class="text">
-        <h2>${course.display_name_with_default}</h2>
-        <p class="course_price">${course_price}</p>
-      </div>
-    </div>
-</div>
 ## Need to put this hidden form on the page so that the registration button works.
 ## Since it's no harm to display a hidden form, we display it with the most permissive conditional
 ## which is when the student is not registered.
