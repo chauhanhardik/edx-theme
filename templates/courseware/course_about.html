@@ -17,6 +17,14 @@ from openedx.core.lib.courses import course_image_url
   <meta property="og:description" content="${get_course_about_section(request, course, 'short_description')}" />
 </%block>
 
+<%
+  # this will fetch first instructor of course
+  from student.roles import CourseInstructorRole
+  from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
+  users = CourseInstructorRole(course.id).users_with_role()
+  instructors = [instructor for instructor in users]
+%>
+
 <%block name="js_extra">
 
   <script type="text/javascript">
@@ -122,7 +130,7 @@ from openedx.core.lib.courses import course_image_url
 .main-cta span{ width:87%; padding: 10px; background: #cdcdcd; float: left; width: 93%; text-align: center; border: 1px solid gray; }
 .course-info .course-sidebar .important-dates li .icon{margin: 0 10px 0 0;}
 .main-cta h1{margin-bottom:10px; text-align:left; font-weight:bolder;}
-.trainer_container{padding-bottom: 30px;background: #fff;float:left;padding: 10px; background: #fff;}
+.trainer_container{padding-bottom: 30px;background: #fff;float:left;padding: 10px; background: #fff;width: 100%;}
 .trainer_container div:first-child{min-height: 100px;margin-bottom: 10px;}
 .trainer_container .trainer_image{width: 30%; float: left; margin-right: 3%;}
 .trainer_container .name_and_desg{float:left; width:67%;}
@@ -190,7 +198,27 @@ $(document).ready(function(){
       </h1>
       <p class="short_description">${get_course_about_section(request, course, 'short_description')}</p>
       <p class="student_enrolled"><span class="fa fa-users" />&nbsp; 2 student enrolled</p>
-      <p class="instructor_details">Instructed by <a href="">John Doe</a></p>
+        % if instructors:
+          % if request.user.is_authenticated():
+              <p class="instructor_details">Instructed by
+              <% first_instructor = True %> 
+              % for instructor in instructors:
+                % if first_instructor:
+                    <% first_instructor = False %>
+                % else:
+                    &#44;
+                % endif
+                <a href="${reverse('learner_profile', kwargs={'username': instructor.username})}">${instructor.profile.name if instructor.profile.name else instructor.username}</a>
+              % endfor
+              </p>
+          % else:
+              <p class="instructor_details">Instructed by 
+              % for instructor in instructors:
+                <span>${instructor.profile.name if instructor.profile.name else instructor.username},</span>
+              % endfor
+              </p>
+          % endif
+        % endif
     </div>
     <div class="main_other_details">
       <div class="img_video_container">
@@ -444,6 +472,36 @@ $(document).ready(function(){
       <div class="inner-wrapper course_overview">
         ${get_course_about_section(request, course, "overview")}
       </div>
+
+
+
+    % if instructors:
+    <div class="sidebar_container">
+        <div class="instructor_container">
+            <p class="header_title">Instructor</p>
+            % for instructor in instructors:
+            <div class="trainer_container">
+                <div class="trainer_image">
+                    <img src="${get_profile_image_urls_for_user(instructor)['large']}" alt="course_image"/>
+                </div>
+                <div class="name_and_desg">             
+                    <p>${instructor.profile.name if instructor.profile.name else instructor.username}</p>
+                    <p>
+                        % if instructor.profile.level_of_education:
+                            <p>${instructor.profile.level_of_education_display}</p>
+                        % endif
+                    </p>
+                </div>
+                <div class="details_container row">
+                    % if instructor.profile.bio:
+                        <p>${instructor.profile.bio}</p>
+                    % endif
+                </div>  
+            </div>
+            % endfor
+        </div>
+    </div>
+    % else:
     <div class="sidebar_container">
         <div class="instructor_container">
             <p class="header_title">Instructor</p>
@@ -461,31 +519,15 @@ $(document).ready(function(){
 Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
                 </div>  
             </div>
-
-            <div class="trainer_container">
-                <div class="trainer_image">
-                    <img src="http://www.businesscomputingworld.co.uk/wp-content/uploads/2013/08/Computer-User.jpg" alt="course_image"/>
-                </div>
-                <div class="name_and_desg">             
-                    <p>John Doe</p>
-                    <p>Software Engineer</p>
-                </div>
-                <div class="details_container row">
-                    <p>An excellent resource for AWS Certified Solutions Architect - Associate Level exam preparation.
-
-Exam questions focused on: EC2, S3, VPC, EBS, RDS , VPC ( NACL and VPN), IAM (cross-account sharing), Rout53, Billing (couple of questions related to consolidated billing and tagging of resources for billing purposes).</p>
-                </div>  
-            </div>
         </div>
-        
     </div>
+    % endif
     </section>
-
     
 
       ## For now, ocw links are the only thing that goes in additional resources
-      % if get_course_about_section(request, course, "ocw_links"):
-      <section class="additional-resources">
+    % if get_course_about_section(request, course, "ocw_links"):
+    <section class="additional-resources">
         <header>
           <h1>${_("Additional Resources")}</h1>
         </header>
