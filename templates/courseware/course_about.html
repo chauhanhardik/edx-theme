@@ -123,7 +123,7 @@ from openedx.core.lib.courses import course_image_url
 .main_course_details p.student_enrolled{}
 .main_other_details{margin-top:30px;float: left;width: 100%;}
 .main_other_details .img_video_container{float:left;width:70%;}
-.main_other_details .img_video_container iframe, .main_other_details .img_video_container img{width:95%; height:450px;}
+.main_other_details .img_video_container iframe, .main_other_details .img_video_container img{width:100%; height:450px;}
 .main_other_details .course-sidebar{width:30%;}
 .main_other_details .img_video_container img{width:95%; height:450px;}
 .main-cta a{ width:87%; color: #fff; }
@@ -177,6 +177,15 @@ ul{padding-left: 20px;}
 .material li span{font-family: 'open sans';}
 .material li span.category{font-weight: bolder;}
 .material li span.category_count{font-weight: bolder;}
+@media only screen and (max-width: 500px) {
+    header.global{height: 115px;}
+    .container{padding: 0 10px;}
+    .container, section.outside-app, .wrapper-account-settings, .view-profile .profile-self .wrapper-profile-field-account-privacy .u-field-account_privacy, .view-profile .wrapper-profile-sections{min-width:0; }
+    .main_other_details .img_video_container{clear: both;width: auto; padding: 0 10px;}
+    .main_other_details .course-sidebar{clear: both;width: auto;}
+    .course_overview, .sidebar_container{width: auto;clear: both;}
+    .trainer_container{box-sizing: border-box;}
+}
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -187,7 +196,7 @@ $(document).ready(function(){
 
 <section class="course-info">
   <section class="container">
-    <div class="main_course_details">
+    <div class="main_course_details row">
       <h1>
         ${course.display_name_with_default}
       </h1>
@@ -221,15 +230,15 @@ $(document).ready(function(){
           % endif
         % endif
     </div>
-    <div class="main_other_details">
-      <div class="img_video_container">
+    <div class="main_other_details row">
+      <div class="img_video_container col-md-9">
         % if get_course_about_section(request, course, "video"):
             ${get_course_about_section(request, course, "video")}
         %else:
             <img src="${course_image_url(course)}" alt="" />
         % endif
       </div>
-      <section class="course-sidebar">
+      <section class="course-sidebar col-md-3">
         <section class="course-summary">
           <div class="main-cta">
 
@@ -455,8 +464,8 @@ $(document).ready(function(){
   </section>
 </section>
 <section class="course-info custom-course-info">
- <section class="container ">
-    <section class="details">
+ <section class="container">
+    <section class="details row">
       % if staff_access and studio_url is not None:
         <div class="wrap-instructor-info studio-view">
           <a class="instructor-info-action" href="${studio_url}">${_("View About Page in studio")}</a>
@@ -472,14 +481,14 @@ $(document).ready(function(){
       ##  <a href="#">${_("Reviews")}</a>
       </nav>-->
 
-      <div class="inner-wrapper course_overview">
+      <div class="inner-wrapper course_overview col-md-9">
         ${get_course_about_section(request, course, "overview")}
       </div>
 
 
 
     % if instructors:
-    <div class="sidebar_container">
+    <div class="sidebar_container col-md-3">
         <div class="instructor_container">
             <p class="header_title">Instructor</p>
             % for instructor in instructors:
