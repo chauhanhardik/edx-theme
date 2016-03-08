@@ -7,6 +7,8 @@ from courseware.courses import get_course_about_section
 from django.conf import settings
 from edxmako.shortcuts import marketing_link
 from openedx.core.lib.courses import course_image_url
+from datetime import datetime
+from django.utils import timezone
 %>
 
 <%inherit file="../main.html" />
@@ -413,34 +415,37 @@ $(document).ready(function(){
         <section class="syllabus">
         <p class="header_title">Syllabus</p>
         % for section in course.get_children():
+          % if not section.visible_to_staff_only and section.start < timezone.now():
             <p class="section_name"><b>${section.display_name_with_default}</b></p>
             <% material_type = {} %>
             % for sub_section in section.get_children():
-              % if not sub_section.visible_to_staff_only:
+              % if not sub_section.visible_to_staff_only and sub_section.start < timezone.now():
                   <p class="sub_section_name">${sub_section.display_name_with_default}
                   % for unit in sub_section.get_children():
-                    <!-- <p class="sub_section_name">${unit.display_name_with_default}</p> -->
-                    <% 
-                        is_first_unit = True
-                    %>
-                    % for component in unit.get_children():
-                        <%
-                            if not component.category in material_type.keys():
-                                material_type[component.category] = 1
-                            else:
-                                material_type[component.category] = material_type[component.category]+1
+                    % if not unit.visible_to_staff_only and unit.start < timezone.now():
+                        <!-- <p class="sub_section_name">${unit.display_name_with_default}</p> -->
+                        <% 
+                            is_first_unit = True
                         %>
-                        % if is_first_unit:
-                            <% is_first_unit = False %>
-                            % if component.category == 'video':
-                                % if component.html5_sources:
-                                    <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="html5" data-url="${component.html5_sources[0]}"><span class="fa fa-video-camera"></span></a>
-                                % else:
-                                    <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="youtube" data-url="https://www.youtube.com//embed/${component.youtube_id_1_0}"><span class="fa fa-video-camera"></span></a>
+                        % for component in unit.get_children():
+                            <%
+                                if not component.category in material_type.keys():
+                                    material_type[component.category] = 1
+                                else:
+                                    material_type[component.category] = material_type[component.category]+1
+                            %>
+                            % if is_first_unit:
+                                <% is_first_unit = False %>
+                                % if component.category == 'video':
+                                    % if component.html5_sources:
+                                        <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="html5" data-url="${component.html5_sources[0]}"><span class="fa fa-video-camera"></span></a>
+                                    % else:
+                                        <a href="#intro-video-modal" rel="leanModal" class="intro_video" data-video-type="youtube" data-url="https://www.youtube.com//embed/${component.youtube_id_1_0}"><span class="fa fa-video-camera"></span></a>
+                                    % endif
                                 % endif
                             % endif
-                        % endif
-                    % endfor
+                        % endfor
+                    % endif
                   % endfor
                   </p>
                 % endif
@@ -456,7 +461,7 @@ $(document).ready(function(){
                 % endfor
             </ul>
             % endif
-            
+          % endif
         % endfor
         </section>
       % endif
