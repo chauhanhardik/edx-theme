@@ -8,6 +8,7 @@ from django.conf import settings
 from edxmako.shortcuts import marketing_link
 from openedx.core.lib.courses import course_image_url
 from datetime import datetime
+from student.models import CourseEnrollment
 from django.utils import timezone
 %>
 
@@ -203,7 +204,12 @@ $(document).ready(function(){
         ${course.display_name_with_default}
       </h1>
       <p class="short_description">${get_course_about_section(request, course, 'short_description')}</p>
-      <p class="student_enrolled"><span class="fa fa-users" />&nbsp; 2 student enrolled</p>
+      <p class="student_enrolled"><span class="fa fa-users" />&nbsp; 
+      % if CourseEnrollment.objects.enrollment_counts(course.id)['total']: 
+      	${CourseEnrollment.objects.enrollment_counts(course.id)['total']} students enrolled</p>
+      % else:
+      	Be the first one</p>
+      % endif
         % if instructors:
           % if request.user.is_authenticated():
               <p class="instructor_details">Instructed by
